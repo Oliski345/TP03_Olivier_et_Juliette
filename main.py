@@ -3,7 +3,7 @@
 import json
 import csv
 import xml.etree.ElementTree as ET
-
+from itertools import filterfalse
 
 
 # 1
@@ -122,3 +122,64 @@ class AgregateurDonnees:
         except Exception as e:
             print(f"Erreur inattendue est survenue:{e}")
 
+2
+class SolveurNReines:
+    # fait par Olivier
+    def __init__(self, taille):
+        """Initialisation des attributs"""
+        self.taille = taille
+        self.solutions = []
+        self.echiquier = [-1] * taille
+
+    def est_valide(self, ligne, colonne):
+        """Vérifier la validité de la reine"""
+        for i in range(colonne):
+            if self.echiquier[i] == ligne:
+                return False
+            if abs(self.echiquier[i] - ligne) == abs(i - colonne):
+                return False
+            return True
+
+    def placer_reine(self,colonne):
+        if colonne == self.taille:
+            self.solutions.append(tuple(self.echiquier))
+            return
+        for ligne in range(self.taille):
+            if self.est_valide(ligne, colonne):
+                self.echiquier[colonne] = ligne
+                self.placer_reine(colonne+1)
+                self.echiquier[colonne]= -1
+
+    def resoudre(self):
+        self.solutions = []
+        self.echiquier = ([-1] * self.taille)
+        self.placer_reine(0)
+        return len(self.solutions)
+
+    def afficher_solution(self, endroit):
+        if 0 <= endroit < len(self.solutions):
+            solution = self.solutions[endroit]
+            print(f"Solution #{endroit + 1}:")
+            for ligne in solution:
+                print(". " * ligne + "Q " + ". " * (self.taille - ligne - 1))
+        else:
+            print("Endroit invalide.")
+
+    def enregistrer_soluce(self, fichier):
+        """Fonction pour enregistrer la solution"""
+        try:
+            with open(fichier, "w", encoding="utf-8") as f:
+                for i, solution in enumerate(self.solutions):
+                    f.write(f"solution {i + 1}:\n")
+                    for ligne in solution:
+                        fichier.write("."* ligne+"Q"+"."*(self.taille - ligne - 1) + "\n")
+                        fichier.write("\n")
+        except Exception as e:
+            print(f"Erreur inattendue est survenue:{e}")
+
+
+solveur = SolveurNReines(8)
+nb_solutions = solveur.resoudre()
+print(f"Nombre de solutions trouvées: {nb_solutions}")
+solveur.afficher_solution(0)
+solveur.enregistrer_soluce("solutions_8reines.txt")
