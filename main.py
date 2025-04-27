@@ -358,4 +358,40 @@ class Generateurmotdepasse:
         return Motdepasse(mot_modifie)
 
 
+# --- Programme principal ---
 
+# Créer un générateur
+generateur = Generateurmotdepasse()
+
+# Générer deux mots de passe
+mdp_alea = generateur.generer_aleatoire(longueur=8, avec_symboles=True)
+mdp_base = generateur.generer_simple("python")
+
+# Afficher les mots de passe
+print("Mots de passe générés :")
+print(f"Aléatoire : {mdp_alea.valeur}")
+print(f"Basé sur 'python' : {mdp_base.valeur}")
+
+# Analyser les mots de passe
+score_alea = mdp_alea.calculer_score()
+score_base = mdp_base.calculer_score()
+print(f"\nScore du mot de passe aléatoire : {score_alea}/100")
+print(f"Score du mot de passe basé sur 'python' : {score_base}/100")
+
+# Obtenir des suggestions d'amélioration
+suggestions = mdp_base.suggerer_ameliorations()
+print("\nSuggestions d'amélioration pour le mot de passe basé sur 'python' :")
+for s in suggestions:
+    print(f"- {s}")
+
+# Tester la résistance à la force brute
+print("\nTest de force brute (2 premiers caractères connus) :")
+resultat, tentatives, temps = mdp_alea.tester_force_brute(caracteres_connus=2, max_tentatives=5000)
+if resultat:
+    print(f"Mot de passe trouvé en {tentatives} tentatives ({temps:.2f} secondes)")
+else:
+    print(f"Échec après {tentatives} tentatives ({temps:.2f} secondes)")
+
+# Estimer le temps de cassage
+print(f"\nTemps estimé pour casser le mot de passe aléatoire : {mdp_alea.estimer_temps_cassage()}")
+print(f"Temps estimé pour casser le mot de passe basé sur 'python' : {mdp_base.estimer_temps_cassage()}")
