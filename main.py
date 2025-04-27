@@ -189,6 +189,7 @@ solveur.enregistrer_soluce("solutions_8reines.txt")
 
 #3
 class Motdepasse:
+    """ Cette classe présente un mot de passe et inclut des méthodes d'analyse"""
     def __init__(self, valeur : str ):
         self.__valeur = valeur
         self.__longueur = len(valeur)
@@ -207,19 +208,24 @@ class Motdepasse:
         return self.__score_securite
 
     def contient_minuscules(self):
+        """ Vérifie si le mot de passe contient au moins une minuscule"""
         return any(c.islower() for c in self.__valeur)
 
     def contient_majuscules(self):
+        """ Vérifie si le mot de passe contient au moins une majuscule"""
         return any(c.isupper() for c in self.__valeur)
 
     def contient_chiffres(self):
+        """ Vérifie si le mot de passe contient au moins un chiffre"""
         return any(c.isdigit() for c in self.__valeur)
 
     def contient_symboles(self):
+        """ Vérifie si le mot de passe contient au moins un symbole"""
         symboles = "!@#$%^&*()-_+=[]{}|:;',.<>?/"
         return any(c in symboles for c in self.__valeur)
 
     def calculer_score(self):
+        """ Calcule le score de sécurité qu'offre le mot de passe"""
         score = 0
         if self.__longueur <= 4:
             score += 10
@@ -241,6 +247,7 @@ class Motdepasse:
         return self.__score_securite
 
     def suggerer_ameliorations(self):
+        """ Suggère des améliorations possibles d'un mot de passe"""
         suggestions = []
         if self.__longueur < 8:
             suggestions.append("Augmenter la longueur du mot de passe")
@@ -257,6 +264,7 @@ class Motdepasse:
         return suggestions
 
     def tester_force_brute(self, caracteres_connus=0, max_tentatives=10000):
+        """ Simule une attaque de force brute sur le mot de passe"""
         debut = time.time()
         charset = string.ascii_letters + string.digits
         mot_de_passe = self.__valeur
@@ -282,6 +290,7 @@ class Motdepasse:
         return False, essaie, elapsed
 
     def estimer_temps_cassage(self):
+        """ Estime le temps de cassage du mot de passe"""
         types = 0
         if self.contient_minuscules():
             types += 26
@@ -307,9 +316,46 @@ class Motdepasse:
             return f"{temps_secondes / 31_536_000:.2f} années"
 
     def __str__(self):
+        """ Donne le mot de passe et son score"""
         masked = self.__valeur[:2] + "*" * (self.__longueur - 2)
         return f"Mot de passe: {masked} (Score: {self.__score_securite}/100)"
 
+
+class Generateurmotdepasse:
+    """ Cette classe génère un mot de passe"""
+    def __init__(self):
+        self.__minuscules = string.ascii_lowercase
+        self.__majuscules = string.ascii_uppercase
+        self.__chiffres = string.digits
+        self.__symboles = "!@#$%^&*()-_+=[]{}|:;',.<>?/"
+
+    def generer_aleatoire(self, longueur=8, avec_symboles=False):
+        """ Génère un mot de passe aléatoire"""
+        if longueur < 4:
+            raise ValueError("Longueur minimale : 4 caractères")
+
+        pool = [random.choice(self.__minuscules),
+                random.choice(self.__majuscules),
+                random.choice(self.__chiffres)]
+        if avec_symboles:
+            pool.append(random.choice(self.__symboles))
+
+        reste = longueur - len(pool)
+        caracteres_possibles = self.__minuscules + self.__majuscules + self.__chiffres
+        if avec_symboles:
+            caracteres_possibles += self.__symboles
+
+        pool += random.choices(caracteres_possibles, k=reste)
+        random.shuffle(pool)
+        return Motdepasse(''.join(pool))
+
+
+    def generer_simple(self, mot_base):
+        """ Génère un mot de passe simple"""
+        substitutions = {'a': '4', 'e': '3', 'i': '1', 'o': '0', 's': '$'}
+        mot_modifie = ''.join(substitutions.get(c, c) for c in mot_base.lower())
+        mot_modifie += str(random.randint(0, 9))
+        return Motdepasse(mot_modifie)
 
 
 
