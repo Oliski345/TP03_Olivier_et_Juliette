@@ -132,11 +132,13 @@ class SolveurNReines:
         self.echiquier = [-1] * taille
 
     def est_valide(self, ligne, colonne):
-        for c in range(colonne):
-            if self.echiquier[c] == ligne or \
-               abs(self.echiquier[c] - ligne) == abs(c - colonne):
+        """Vérifier la validité de la reine"""
+        for i in range(colonne):
+            if self.echiquier[i] == ligne:
                 return False
-        return True
+            if abs(self.echiquier[i] - ligne) == abs(i - colonne):
+                return False
+            return True
 
     def placer_reine(self,colonne):
         if colonne == self.taille:
@@ -150,37 +152,82 @@ class SolveurNReines:
 
     def resoudre(self):
         self.solutions = []
-        self.echiquier = [-1] * self.taille
+        self.echiquier = ([-1] * self.taille)
         self.placer_reine(0)
         return len(self.solutions)
+
+    def afficher_solution(self, endroit):
+        if 0 <= endroit < len(self.solutions):
+            solution = self.solutions[endroit]
+            print(f"Solution #{endroit + 1}:")
+            for ligne in solution:
+                print(". " * ligne + "Q " + ". " * (self.taille - ligne - 1))
+        else:
+            print("Endroit invalide.")
 
     def enregistrer_soluce(self, fichier):
         """Fonction pour enregistrer la solution"""
         try:
             with open(fichier, "w", encoding="utf-8") as f:
                 for i, solution in enumerate(self.solutions):
-                    f.write(f"solution #{i + 1}:\n")
+                    f.write(f"solution {i + 1}:\n")
                     for ligne in solution:
-                        fichier.write("." * ligne +"Q"+"." * (self.taille - ligne - 1) + "\n")
-                    fichier.write("\n")
+                        fichier.write("."* ligne+"Q"+"."*(self.taille - ligne - 1) + "\n")
+                        fichier.write("\n")
         except Exception as e:
             print(f"Erreur inattendue est survenue:{e}")
-
-    def afficher_toutes_solutions(self):
-        if self.solutions:
-            for i, solution in enumerate(self.solutions):
-                print(f"Solution #{i + 1}:")
-                for ligne in solution:
-                    print(". " * ligne + "Q " + ". " * (self.taille - ligne - 1))
-                print()
-        else:
-            print("Aucune solution disponible.")
-
-
 
 
 solveur = SolveurNReines(8)
 nb_solutions = solveur.resoudre()
 print(f"Nombre de solutions trouvées: {nb_solutions}")
-solveur.afficher_toutes_solutions()
+solveur.afficher_solution(0)
 solveur.enregistrer_soluce("solutions_8reines.txt")
+
+#3
+class Motdepasse:
+    def __init__(self, valeur : str ):
+        self.__valeur = valeur
+        self.__longueur = len(valeur)
+        self.__score_securite = 0
+
+
+
+
+
+
+    def contient_minuscules(self):
+        return any(c.islower() for c in self.__valeur)
+
+    def contient_majuscules(self):
+        return any(c.isupper() for c in self.__valeur)
+
+    def contient_chiffres(self):
+        return any(c.isdigit() for c in self.__valeur)
+
+    def contient_symboles(self):
+        symboles = "!@#$%^&*()-_+=[]{}|:;',.<>?/"
+        return any(c in symboles for c in self.__valeur)
+
+    def calculer_score(self):
+        score = 0
+        if self.__longueur <= 4:
+            score += 10
+        elif self.__longueur <= 7:
+            score += 25
+        else:
+            score += 50
+
+        if self.contient_minuscules():
+            score += 12.5
+        if self.contient_majuscules():
+            score += 12.5
+        if self.contient_chiffres():
+            score += 12.5
+        if self.contient_symboles():
+            score += 12.5
+
+        self.__score_securite = int(score)
+        return self.__score_securite
+
+
