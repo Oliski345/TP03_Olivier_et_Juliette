@@ -4,6 +4,9 @@ import json
 import csv
 import xml.etree.ElementTree as ET
 from itertools import filterfalse
+import random
+import string
+import time
 
 
 # 1
@@ -191,10 +194,17 @@ class Motdepasse:
         self.__longueur = len(valeur)
         self.__score_securite = 0
 
+    @property
+    def valeur(self):
+        return self.__valeur
 
+    @property
+    def longueur(self):
+        return self.__longueur
 
-
-
+    @property
+    def score_securite(self):
+        return self.__score_securite
 
     def contient_minuscules(self):
         return any(c.islower() for c in self.__valeur)
@@ -229,5 +239,23 @@ class Motdepasse:
 
         self.__score_securite = int(score)
         return self.__score_securite
+
+    def suggerer_ameliorations(self):
+        suggestions = []
+        if self.__longueur < 8:
+            suggestions.append("Augmenter la longueur du mot de passe")
+        if not self.contient_minuscules():
+            suggestions.append("Ajouter des lettres minuscules")
+        if not self.contient_majuscules():
+            suggestions.append("Ajouter des lettres majuscules")
+        if not self.contient_chiffres():
+            suggestions.append("Ajouter des chiffres")
+        if not self.contient_symboles():
+            suggestions.append("Ajouter des caractères spéciaux")
+        if self.__score_securite >= 80 and not suggestions:
+            suggestions.append("Bon mot de passe!")
+        return suggestions
+
+
 
 
