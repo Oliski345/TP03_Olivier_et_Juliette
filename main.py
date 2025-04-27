@@ -256,6 +256,60 @@ class Motdepasse:
             suggestions.append("Bon mot de passe!")
         return suggestions
 
+    def tester_force_brute(self, caracteres_connus=0, max_tentatives=10000):
+        debut = time.time()
+        charset = string.ascii_letters + string.digits
+        mot_de_passe = self.__valeur
+        prefix = mot_de_passe[:caracteres_connus]
+        pour_briser = mot_de_passe[caracteres_connus:]
+
+        def forcebrute(longueur):
+            if longueur == 0:
+                return ['']
+            plus_petit = forcebrute(longueur - 1)
+            return [s + c for s in plus_petit for c in charset]
+
+        essaie = 0
+        for x in forcebrute(len(pour_briser)):
+            essaie += 1
+            if prefix + x == mot_de_passe:
+                elapsed = time.time() - debut
+                return True, essaie, elapsed
+            if essaie >= max_tentatives:
+                break
+
+        elapsed = time.time() - debut
+        return False, essaie, elapsed
+
+    def estimer_temps_cassage(self):
+        types = 0
+        if self.contient_minuscules():
+            types += 26
+        if self.contient_majuscules():
+            types += 26
+        if self.contient_chiffres():
+            types += 10
+        if self.contient_symboles():
+            types += 32
+
+        combinaisons = types ** self.__longueur
+        temps_secondes = combinaisons / 1_000_000_000
+
+        if temps_secondes < 60:
+            return f"{temps_secondes:.2f} secondes"
+        elif temps_secondes < 3600:
+            return f"{temps_secondes / 60:.2f} minutes"
+        elif temps_secondes < 86400:
+            return f"{temps_secondes / 3600:.2f} heures"
+        elif temps_secondes < 31_536_000:
+            return f"{temps_secondes / 86400:.2f} jours"
+        else:
+            return f"{temps_secondes / 31_536_000:.2f} années"
+
+    def __str__(self):
+        masked = self.__valeur[:2] + "*" * (self.__longueur - 2)
+        return f"Mot de passe: {masked} (Score: {self.__score_securite}/100)"
+
 
 
 
