@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 
 # 1
 class AgregateurDonnees:
+    """Ce numéro a été fait par Olivier"""
     def __init__(self):
         # Création liste vide
         self.donnees = []
@@ -82,10 +83,42 @@ class AgregateurDonnees:
 
     def calculer_statistique(self):
         try:
+            def calculer_mediane(liste):
+                liste_ordonnee = sorted(liste)
+                n = len(liste_ordonnee)
+                if n % 2 == 0:
+                    return (liste_ordonnee[n // 2 - 1] + liste_ordonnee[n // 2]) / 2
+
             ages = [etudiant["age"] for etudiant in self.donnees]
             maths = [etudiant["math"] for etudiant in self.donnees]
             science = [etudiant["science"] for etudiant in self.donnees]
             francais = [etudiant["francais"] for etudiant in self.donnees]
             prog = [etudiant["prog"] for etudiant in self.donnees]
 
-            return
+            return {
+                "age_moyenne": sum(ages) / len(ages),
+                "math_moyenne": sum(maths) / len(maths),
+                "science_moyenne": sum(science) / len(science),
+                "francais_moyenne": sum(francais) / len(francais),
+                "prog_moyenne": sum(prog) / len(prog),
+                "médiane math": calculer_mediane(maths),
+                "médiane science": calculer_mediane(science),
+                "médiane francais": calculer_mediane(francais),
+                "médiane prog": calculer_mediane(prog),
+                "classement par note total": sorted(self.donnees, key=lambda x: (x["math"] + x["science"] +
+                                                                                 x["francais"] + x["prog"]),reverse=True)}
+        except Exception as e:
+            print(f"Erreur inattendue est survenue:{e}")
+        except ZeroDivisionError:
+            print("Erreur impossible diviser par zéro")
+
+    def stockage(self, chemin, resultat):
+        try:
+            with open(chemin, "r", encoding="utf-8") as f:
+                json.dump(resultat, f, indent=4)
+
+        except IOError:
+            print("erreur")
+        except Exception as e:
+            print(f"Erreur inattendue est survenue:{e}")
+
