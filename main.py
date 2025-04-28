@@ -141,7 +141,7 @@ class SolveurNReines:
                 return False
             if abs(self.echiquier[i] - ligne) == abs(i - colonne):
                 return False
-            return True
+        return True
 
     def placer_reine(self,colonne):
         if colonne == self.taille:
@@ -159,14 +159,15 @@ class SolveurNReines:
         self.placer_reine(0)
         return len(self.solutions)
 
-    def afficher_solution(self, endroit):
-        if 0 <= endroit < len(self.solutions):
-            solution = self.solutions[endroit]
-            print(f"Solution #{endroit + 1}:")
-            for ligne in solution:
-                print(". " * ligne + "Q " + ". " * (self.taille - ligne - 1))
+    def afficher_toutes_solutions(self):
+        if self.solutions:
+            for i, solution in enumerate(self.solutions):
+                print(f"Solution #{i + 1}:")
+                for ligne in solution:
+                    print(". " * ligne + "Q " + ". " * (self.taille - ligne - 1))
+                print()
         else:
-            print("Endroit invalide.")
+            print("Aucune solution disponible.")
 
     def enregistrer_soluce(self, fichier):
         """Fonction pour enregistrer la solution"""
@@ -176,7 +177,7 @@ class SolveurNReines:
                     f.write(f"solution {i + 1}:\n")
                     for ligne in solution:
                         fichier.write("."* ligne+"Q"+"."*(self.taille - ligne - 1) + "\n")
-                        fichier.write("\n")
+                    fichier.write("\n")
         except Exception as e:
             print(f"Erreur inattendue est survenue:{e}")
 
@@ -184,10 +185,11 @@ class SolveurNReines:
 solveur = SolveurNReines(8)
 nb_solutions = solveur.resoudre()
 print(f"Nombre de solutions trouvées: {nb_solutions}")
-solveur.afficher_solution(0)
+solveur.afficher_toutes_solutions()
 solveur.enregistrer_soluce("solutions_8reines.txt")
 
 #3
+"""Fait par juliette"""
 class Motdepasse:
     """ Cette classe présente un mot de passe et inclut des méthodes d'analyse"""
     def __init__(self, valeur : str ):
